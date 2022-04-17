@@ -37,15 +37,7 @@ public final class InvertedIndex {
         sparkConf.set("spark.app.name", "localrun");
         SparkContext sparkContext = SparkContext.getOrCreate(sparkConf);
         JavaSparkContext javaSparkContext = new JavaSparkContext(sparkContext);
-//        for(String f : fileList){
-//            JavaRDD<String> lines = sparkContext.textFile(f);
-//            JavaRDD<Object> files1;
-//            files1 = lines.flatMap(x-> Arrays.stream(x.split(" ")).forEach(y->{
-//                WordAndFileMapper mapper = new WordAndFileMapper();
-//                mapper.setNumber(f);
-//                mapper.setWord(y);
-//            }));
-//        }
+        //map to (word fileName)  ((word filename), 1) , rudece, map为(（word）, (filename count)), 最后按照word group by
         JavaPairRDD<String, String> fileNameContentsRDD = javaSparkContext.wholeTextFiles("src/main/java/source/word", 1);
         JavaPairRDD<String, String> wordFileNameRDD = fileNameContentsRDD.flatMapToPair((PairFlatMapFunction<Tuple2<String, String>, String, String>) fileNameContentPair -> {
             String fileName = getFileName(fileNameContentPair._1());
